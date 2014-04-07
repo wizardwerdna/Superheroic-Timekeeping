@@ -1,0 +1,11 @@
+<div ng-controller="AppVM as vm">
+  <div class="no-entries-msg" ng-if="vm.entries.length===0">
+    There are no timesheet entries.
+  </div>
+
+  <div class="entry" ng-repeat="entry in vm.entries track by entry.date">
+    <div class="date">{{ entry.date }}</div>
+    <div class="desc">{{ entry.desc }}</div>
+    <div class="hour">{{ entry.hour }}</div>
+  </div>
+</div>

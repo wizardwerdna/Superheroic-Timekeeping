@@ -3,7 +3,8 @@
     There are no timesheet entries.
   </div>
 
-  <div class="entry" ng-repeat="entry in vm.entries track by entry.date">
+  <div class="entry"
+    ng-repeat="entry in vm.entries | orderBy: 'date' track by entry.date">
     <div class="date">{{ entry.date }}</div>
     <div class="desc">{{ entry.desc }}</div>
     <div class="hour">{{ entry.hour }}</div>

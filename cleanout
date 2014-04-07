@@ -1,0 +1,6 @@
+#! /usr/bin/env sh
+rm -rf test/*
+rm -rf app/scripts
+rm -rf app/views
+rm app/*.js
+rm app/*.html

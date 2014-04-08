@@ -1,12 +1,20 @@
 <div ng-controller="AppVM as vm">
-  <div class="no-entries-msg" ng-if="vm.entries.length===0">
+  <div class="no-entries-msg" ng-if="vm.entries.read().length===0">
     There are no timesheet entries.
   </div>
 
   <div class="entry"
-    ng-repeat="entry in vm.entries | orderBy: 'date' track by entry.date">
+    ng-repeat="entry in vm.entries.read() | orderBy: 'date' track by entry.$id">
     <div class="date">{{ entry.date }}</div>
     <div class="desc">{{ entry.desc }}</div>
     <div class="hour">{{ entry.hour }}</div>
   </div>
+
+  <form id="newEntryForm" role="form" ng-submit="vm.submitNewEntry()">
+    <input class="date" type="date" ng-model="vm.newEntry.date">
+    <textarea class="desc" rows="10" ng-model="vm.newEntry.desc"></textarea>
+    <input class="hour" type="number" step="0.1" ng-model="vm.newEntry.hour">
+    <button type="submit">O</button>
+    <div type="cancel" ng-click="vm.resetNewEntry()">X</div>
+  </form>
 </div>

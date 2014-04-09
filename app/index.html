@@ -1,31 +1,97 @@
-<div ng-controller="AppVM as vm">
-  <div class="no-entries-msg" ng-if="vm.entries.read().length===0">
-    There are no timesheet entries.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Superheroic Timekeeping</title>
+  <link rel="stylesheet" type="text/css" href="styles/app.css" media="all">
+</head>
+<body>
+<div ng-app="app" ng-controller="AppVM as vm">
+
+  <div class="jumbotron">
+    <h1>Superheroic Timekeeping</h1>
+    <p>an AngularJS Kata</p>
   </div>
 
-  <div class="entry"
-    ng-repeat="entry in vm.entries.read() | orderBy: 'date' track by entry.$id">
-    <div class="date">{{ entry.date }}</div>
-    <div class="desc">{{ entry.desc }}</div>
-    <div class="hour">{{ entry.hour }}</div>
-    <div class="editEntry{{entry.$id}}" ng-click="vm.resetEditEntry(entry)">O</div>
-    <div class="destroyEntry{{entry.$id}}" 
-      ng-click="vm.confirm() && vm.destroyEntry(entry)">X</div>
+  <div class="well">
+    <div class="row">
+      <div class="col-xs-2">Date</div>
+      <div class="col-xs-8">Description</div>
+      <div class="col-xs-2">Hours</div>
+    </div>
+    <form id="newEntryForm" class="row" role="form" 
+      ng-submit="vm.submitNewEntry()">
+      <input class="date col-xs-2" type="date" ng-model="vm.newEntry.date">
+      <textarea class="desc col-xs-8" rows="5" 
+        ng-model="vm.newEntry.desc"></textarea>
+      <input class="hour col-xs-1" type="number" step="0.1" 
+        ng-model="vm.newEntry.hour">
+      <div class="col-xs-1">
+        <button type="submit" class="btn btn-xs btn-success">
+          <span class="glyphicon glyphicon-save"></span>
+        </button>
+        <div class="cancel btn btn-xs btn-warning" 
+          ng-click="vm.resetNewEntry()">
+          <span class="glyphicon glyphicon-ban-circle"></span>
+        </div>
+      </div>
+    </form>
+
+    <div class="row">
+      <div class="col-xs-2">Date</div>
+      <div class="col-xs-8">Description</div>
+      <div class="col-xs-2">Hours</div>
+    </div>
+    <form id="editEntryForm" class="row" role="form" 
+      ng-submit="vm.submitEditEntry()">
+      <input class="date col-xs-2" type="date" ng-model="vm.editEntry.date">
+      <textarea class="desc col-xs-8" rows="5" 
+        ng-model="vm.editEntry.desc"></textarea>
+      <input class="hour col-xs-1" type="number" step="0.1" 
+        ng-model="vm.editEntry.hour">
+      <div class="col-xs-1">
+        <button type="submit" class="btn btn-xs btn-success">
+          <span class="glyphicon glyphicon-save"></span>
+        </button>
+        <div class="cancel btn btn-xs btn-warning" 
+          ng-click="vm.resetEditEntry({$id: null})">
+          <span class="glyphicon glyphicon-ban-circle"></span>
+        </div>
+      </div>
+    </form>
   </div>
 
-  <form id="newEntryForm" role="form" ng-submit="vm.submitNewEntry()">
-    <input class="date" type="date" ng-model="vm.newEntry.date">
-    <textarea class="desc" rows="10" ng-model="vm.newEntry.desc"></textarea>
-    <input class="hour" type="number" step="0.1" ng-model="vm.newEntry.hour">
-    <button type="submit">O</button>
-    <div type="cancel" ng-click="vm.resetNewEntry()">X</div>
-  </form>
+  <div class="well">
+    <div class="no-entries-msg" ng-if="vm.entries.read().length===0">
+      There are no timesheet entries.
+    </div>
 
-  <form id="editEntryForm" role="form" ng-submit="vm.submitEditEntry()">
-    <input class="date" type="date" ng-model="vm.editEntry.date">
-    <textarea class="desc" rows="10" ng-model="vm.editEntry.desc"></textarea>
-    <input class="hour" type="number" step="0.1" ng-model="vm.editEntry.hour">
-    <button type="submit">O</button>
-    <div type="cancel" ng-click="vm.resetEditEntry({$id: null})">X</div>
-  </form>
+    <div class="row" ng-if="vm.entries.read().length!==0">
+      <div class="col-xs-2">Date</div>
+      <div class="col-xs-8">Description</div>
+      <div class="col-xs-2">Hours</div>
+    </div>
+    <div class="entry row"
+      ng-repeat="entry in vm.entries.read() 
+        | orderBy: 'date' track by entry.$id">
+      <div class="date col-xs-2">{{ entry.date }}</div>
+      <div class="desc col-xs-8">{{ entry.desc }}</div>
+      <div class="hour col-xs-1">{{ entry.hour }}</div>
+      <div class="col-xs-1">
+        <div class="editEntry{{entry.$id}} btn btn-xs btn-primary" 
+          ng-click="vm.resetEditEntry(entry)">
+          <span class="glyphicon glyphicon-edit"></span>
+        </div>
+        <div class="destroyEntry{{entry.$id}} btn btn-xs btn-danger" 
+          ng-click="vm.confirm() && vm.destroyEntry(entry)">
+          <span class="glyphicon glyphicon-trash"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
+<script src="bower_components/angular/angular.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,10 +1,14 @@
 'use strict';
 angular.module('app', [])
 
-.controller('AppVM', function(entries){
+.controller('AppVM', function(entries, $window){
   var vm = this;
 
   vm.entries = entries;
+
+  vm.confirm = function(){
+    return $window.confirm('Are you sure you want to delete this entry?');
+  };
 
   vm.resetNewEntry = function(){
     vm.newEntry = {date: null, desc: null, hour: null};
@@ -28,6 +32,10 @@ angular.module('app', [])
     entries.update(vm.editEntry);
     vm.resetEditEntry(EMPTY_EDIT_ENTRY);
   };
+
+  vm.destroyEntry = function(entry){
+    entries.destroy(entry);
+  };
 })
 
 .factory('entries', function(){
@@ -38,14 +46,14 @@ angular.module('app', [])
     list.push(angular.extend({}, entry, {$id: nextId++}));
   }
 
+  function entriesIndexOfId(id){
+    return list
+      .map(function(e){return e.$id;})
+      .indexOf(id);
+  }
+
   function readById(id){
-    var entry;
-    for (var i=0; i<list.length; i++){
-      entry = list[i];
-      if (entry.$id === id){
-        return entry;
-      }
-    }
+    return list[entriesIndexOfId(id)];
   }
 
   function clearObject(o){
@@ -72,6 +80,9 @@ angular.module('app', [])
     },
     update: function(entry){
       updateFrom(readById(entry.$id), entry);
+    },
+    destroy: function(entry){
+      list.splice(entriesIndexOfId(entry.$id),1);
     }
   };
 });

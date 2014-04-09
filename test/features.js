@@ -1,6 +1,6 @@
 'use strict';
 describe('Superheroic Timekeeping', function(){
-  var page, entries;
+  var page, entries, isConfirmDelete;
   var entry1 = {date: '2014-01-01', desc: 'Description1', hour: 1.1},
       entry2 = {date: '2014-01-02', desc: 'Description2', hour: 1.2},
       entry3 = {date: '2014-01-03', desc: 'Description3', hour: 1.3},
@@ -51,11 +51,34 @@ describe('Superheroic Timekeeping', function(){
     });
   });
 
-  //TODOS
-  describe('FEATURE: Destroy an existing timesheet entry.', function(){ });
+  describe('FEATURE: Destroy an existing timesheet entry.', function(){
+    it('should delete the entry if confirmed', function(){
+      isConfirmDelete = true;
+      GIVEN_TimesheetEntriesFrom([entry1, entry2, entry3]);
+      WHEN_UserClicksDestroyButtonFor(entries.read()[1]);
+      THEN_TimesheetEntryDisplayConformsTo([entry1, entry3]);
+    });
+
+    it('should not delete the entry if not confirmed', function(){
+      isConfirmDelete = false;
+      GIVEN_TimesheetEntriesFrom([entry1, entry2, entry3]);
+      WHEN_UserClicksDestroyButtonFor(entries.read()[1]);
+      THEN_TimesheetEntryDisplayConformsTo([entry1, entry2, entry3]);
+    });
+  });
+
+  function mock$window($provide){
+    $provide.decorator('$window', function($delegate){
+      var decorator = Object($delegate);
+      decorator.confirm = function(){
+        return isConfirmDelete;
+      };
+      return decorator;
+    });
+  }
 
   function GIVEN_TimesheetEntriesFrom(list){
-    module('app', 'index.html');
+    module('app', 'index.html', mock$window);
     inject(function(_entries_){ entries = _entries_; });
     entries.init(list);
     inject(function($compile, $rootScope, $templateCache){
@@ -67,6 +90,11 @@ describe('Superheroic Timekeeping', function(){
   function WHEN_UserClicksEditButtonFor(entry){
     expect(page.find('.editEntry'+entry.$id).length).toBe(1);
     page.find('.editEntry'+entry.$id).click();
+  }
+
+  function WHEN_UserClicksDestroyButtonFor(entry){
+    expect(page.find('.destroyEntry'+entry.$id).length).toBe(1);
+    page.find('.destroyEntry'+entry.$id).click();
   }
 
   function WHEN_UserFillsOutFormAndClicks(entry, formId, button){

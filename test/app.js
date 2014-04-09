@@ -1,16 +1,35 @@
 'use strict';
 describe('ViewModel AppVM', function(){
+  var ConfirmMessage = 'Are you sure you want to delete this entry?';
   var mockEntries = {
     mock: 'entries',
     create: function(){},
-    update: function(){}
+    read: function(){},
+    update: function(){},
+    destroy: function(){}
   };
+
+  var mock$window = {
+    confirm: function(){}
+  };
+
   var vm;
 
   beforeEach(buildVM);
 
   it('should expose entries', function(){
     expect(vm.entries).toBe(mockEntries);
+  });
+
+  describe('confirm()', function(){
+    it('should rely on $window.confirm', function(){
+      vm.confirm();
+      expect(mock$window.confirm).toHaveBeenCalledWith(ConfirmMessage);
+    });
+    it('should return the result of the call', function(){
+      mock$window.confirm.andReturn({mock: 'isConfirmed'});
+      expect(mock$window.confirm()).toEqual({mock: 'isConfirmed'});
+    });
   });
 
   describe('newEntry', function(){
@@ -75,12 +94,24 @@ describe('ViewModel AppVM', function(){
     });
   });
 
+  describe('destroy(entry)', function(){
+    it('should destroy the entry', function(){
+      vm.destroyEntry({mock: 'entry'});
+      expect(mockEntries.destroy).toHaveBeenCalledWith({mock: 'entry'});
+    });
+  });
+
   function buildVM(){
     module('app');
     spyOn(mockEntries, 'create');
     spyOn(mockEntries, 'update');
+    spyOn(mockEntries, 'destroy');
+    spyOn(mock$window, 'confirm');
     inject(function($controller){
-      vm = $controller('AppVM', {entries: mockEntries});
+      vm = $controller('AppVM', {
+        entries: mockEntries,
+        $window: mock$window
+      });
     });
   }
 });

@@ -87,6 +87,15 @@ describe('Factory entries', function(){
     });
   });
 
+  describe('destroy(entry)', function(){
+    it('should destroy the entry in the array', function(){
+      var entry = {$id: 0, mock1: 'entry1', mock2: 'entry2'};
+      entries.init([entry]);
+      entries.destroy(entry);
+      expect(entries.read()).toEqual([]);
+    });
+  });
+
   function numberUniqueIds(list){
     return Object.keys(
       list

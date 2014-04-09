@@ -9,6 +9,8 @@
     <div class="desc">{{ entry.desc }}</div>
     <div class="hour">{{ entry.hour }}</div>
     <div class="editEntry{{entry.$id}}" ng-click="vm.resetEditEntry(entry)">O</div>
+    <div class="destroyEntry{{entry.$id}}" 
+      ng-click="vm.confirm() && vm.destroyEntry(entry)">X</div>
   </div>
 
   <form id="newEntryForm" role="form" ng-submit="vm.submitNewEntry()">

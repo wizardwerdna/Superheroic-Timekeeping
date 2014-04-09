@@ -6,7 +6,7 @@ describe('Superheroic Timekeeping', function(){
       entry3 = {date: '2014-01-03', desc: 'Description3', hour: 1.3},
       entry4 = {date: '2014-01-04', desc: 'Description4', hour: 1.4};
 
-  describe('FEATURE: Display list of timesheet entries, sorted by date.',
+  describe('FEATURE: Display list of timesheet entries sorted by date.',
     function(){
     it('SCENARIO: There are no timesheet entries', function(){
       GIVEN_TimesheetEntriesFrom([]);
@@ -22,18 +22,36 @@ describe('Superheroic Timekeeping', function(){
   describe('FEATURE: Create a new timesheet entry.', function(){
     it('SCENARIO: Fill out a new form and submit.', function(){
       GIVEN_TimesheetEntriesFrom([entry4, entry1, entry2]);
-      WHEN_UserFillsOutFormAndSubmitsFor(entry3);
+      WHEN_UserFillsOutFormAndClicks(entry3, '#newEntryForm', 'button');
       THEN_TimesheetEntryDisplayConformsTo([entry1, entry2, entry3, entry4]);
     });
+
     it('SCENARIO: Fill out a new form and cancel.', function(){
       GIVEN_TimesheetEntriesFrom([entry4, entry1, entry2]);
-      WHEN_UserFillsOutFormAndCancelWith(entry3);
+      WHEN_UserFillsOutFormAndClicks(entry3, '#newEntryForm', '.cancel');
+      THEN_TimesheetEntryDisplayConformsTo([entry1, entry2, entry4]);
+    });
+  });
+
+  describe('FEATURE: Update an existing timesheet entry.', function(){
+    it('SCENARIO: Fill out a new form and submit.', function(){
+      GIVEN_TimesheetEntriesFrom([entry1, entry2, entry3]);
+      var editEntry = angular.extend({}, entry4, {$id: entries.read()[1].$id});
+      WHEN_UserClicksEditButtonFor(editEntry);
+      WHEN_UserFillsOutFormAndClicks(editEntry, '#editEntryForm', 'button');
+      THEN_TimesheetEntryDisplayConformsTo([entry1, entry3, entry4]);
+    });
+
+    it('SCENARIO: Fill out a new form and cancel.', function(){
+      GIVEN_TimesheetEntriesFrom([entry4, entry1, entry2]);
+      var editEntry = angular.extend({}, entry4, {$id: entries.read()[1].$id});
+      WHEN_UserClicksEditButtonFor(editEntry);
+      WHEN_UserFillsOutFormAndClicks(editEntry, '#editEntryForm', '.cancel');
       THEN_TimesheetEntryDisplayConformsTo([entry1, entry2, entry4]);
     });
   });
 
   //TODOS
-  describe('FEATURE: Update an existing timesheet entry.', function(){ });
   describe('FEATURE: Destroy an existing timesheet entry.', function(){ });
 
   function GIVEN_TimesheetEntriesFrom(list){
@@ -46,23 +64,18 @@ describe('Superheroic Timekeeping', function(){
     });
   }
 
-  function fillTableFrom(entry){
-    var form = page.find('#newEntryForm');
+  function WHEN_UserClicksEditButtonFor(entry){
+    expect(page.find('.editEntry'+entry.$id).length).toBe(1);
+    page.find('.editEntry'+entry.$id).click();
+  }
+
+  function WHEN_UserFillsOutFormAndClicks(entry, formId, button){
+    var form = page.find(formId);
     form.find('input.date[type=date]').$type(entry.date);
     form.find('textarea.desc').$type(entry.desc);
     form.find('input.hour[type=number][step="0.1"]').$type(entry.hour);
-    return form;
+    form.find(button).click();
   }
-
-  function WHEN_UserFillsOutFormAndSubmitsFor(entry){
-    fillTableFrom(entry)
-    .find('button[type=submit]').click();
-  }
-
-  function WHEN_UserFillsOutFormAndCancelWith(entry){
-    fillTableFrom(entry)
-    .find('.cancel').click();
-  };
 
   function THEN_TimesheetEntryDisplayConformsTo(list){
     expect(page.find('.no-entries-msg').text().length!==0)

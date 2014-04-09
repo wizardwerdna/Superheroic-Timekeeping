@@ -76,7 +76,9 @@
       <div class="row" ng-if="vm.editEntry.$id !== entry.$id">
         <div class="date col-xs-2">{{ entry.date }}</div>
         <div class="desc col-xs-8">{{ entry.desc }}</div>
-        <div class="hour col-xs-1 text-right">{{ entry.hour }}</div>
+        <div class="hour col-xs-1 text-right">
+          {{ entry.hour | number: 1 }}
+        </div>
         <div class="col-xs-1">
           <div class="editEntry{{entry.$id}} btn btn-xs btn-primary" 
             ng-click="vm.resetEditEntry(entry)">
